@@ -2,6 +2,8 @@ package ma.usmba.app_portefeuille_service.services;
 
 import ma.usmba.app_portefeuille_service.entities.Devise;
 import ma.usmba.app_portefeuille_service.entities.PorteFeuille;
+import ma.usmba.app_portefeuille_service.entities.PorteFeuilleTransaction;
+import ma.usmba.app_portefeuille_service.enums.TypeTransaction;
 import ma.usmba.app_portefeuille_service.repositories.DeviseRepository;
 import ma.usmba.app_portefeuille_service.repositories.PorteFeuilleRepository;
 import ma.usmba.app_portefeuille_service.repositories.PorteFeuilleTransactionRepository;
@@ -56,6 +58,27 @@ public class PorteFeuilleService {
             porteFeuille.setUserId("user1");
             porteFeuille.setId(UUID.randomUUID().toString());
             porteFeuilleRepository.save(porteFeuille);
+        });
+        porteFeuilleRepository.findAll().forEach(porteFeuille -> {
+            for (int i = 0; i < 10; i++) {
+                PorteFeuilleTransaction debitPorteFeuilleTransaction=PorteFeuilleTransaction.builder()
+                        .montant(Math.random()*1000)
+                        .porteFeuille(porteFeuille)
+                        .type(TypeTransaction.DEBIT)
+                        .timesTamp(System.currentTimeMillis())
+                        .build();
+                porteFeuilleTransactionRepository.save(debitPorteFeuilleTransaction);
+                porteFeuille.setSolde(porteFeuille.getSolde() - debitPorteFeuilleTransaction.getMontant());
+                PorteFeuilleTransaction creditPorteFeuilleTransaction=PorteFeuilleTransaction.builder()
+                        .montant(Math.random()*1000)
+                        .porteFeuille(porteFeuille)
+                        .type(TypeTransaction.CREDIT)
+                        .timesTamp(System.currentTimeMillis())
+                        .build();
+                porteFeuilleTransactionRepository.save(creditPorteFeuilleTransaction);
+                porteFeuille.setSolde(porteFeuille.getSolde() + creditPorteFeuilleTransaction.getMontant());
+                porteFeuilleRepository.save(porteFeuille);
+            }
         });
     }
 }
