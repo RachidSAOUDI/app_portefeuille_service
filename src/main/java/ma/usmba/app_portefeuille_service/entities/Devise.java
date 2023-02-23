@@ -19,6 +19,6 @@ public class Devise {
     private String code;
     private String nom;
     private String Symbole;
-    private String prixVente;
-    private String prixAchat;
+    private Double prixVente;
+    private Double prixAchat;
 }
